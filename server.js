@@ -1,41 +1,19 @@
-const express = require('express')
-const cors = require('cors');
-const Convert = require('../server/commands/functions')
-
-const oracledb = require('oracledb');
-
-oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT;
+import express from 'express'
+import cors from 'cors'
+import { ConverteTime, generateCode } from './src/commands/functions.js'
+import { createConnection } from './src/banco/createConnection.js'
 
 const app = express()
 
 app.use(cors());
 app.use(express.json())
 
-const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+// Função Recursiva para verificar e inserir novo codigo do bilhete
 
-function generateString() {
-  let result = '';
-  let length = 14;
-  const charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
-    if (i == 4 || i == 9) {
-      result += '-';
-    } else {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-  }
-
-  return result;
-}
-let code_master = ''
 const recursive = async () => {
-  let code = generateString();
+  let code = generateCode();
 
-  let connection = await oracledb.getConnection( {
-      user          : "ebd1es82221",
-      password      : "Zrqip7",
-      connectString : "172.16.12.48:1521/xe"
-    })
+  const { connection } = await createConnection();
 
   const haveCode = await connection.execute(
       `SELECT *
@@ -49,31 +27,86 @@ const recursive = async () => {
     await connection.execute(
       `INSERT INTO GERACAO
         VALUES (:0,:1,:2)`,
-      [code,today,Convert.ConverteTime()],
+      [code,today,ConverteTime()],
       {autoCommit: true}
     )
     connection.close();
-    code_master = code;
+
+    return { code }
   } else {
     recursive();
   }
 }
 
-app.get('/api/geracao', async (req, res) => {
 
-  await recursive();
+// Api de Home
 
+app.get('/api/home', async (req,res) => {
+
+  const { connection } = await createConnection();
+
+  let qtdGeracao = await connection.execute(`SELECT COUNT(cod_bilhete) "Count" FROM GERACAO`);
+
+  connection.close();
   res.json(
     {
-      "codigo": code_master,
+      "qtd_geracao": qtdGeracao.rows[0].Count,
+      "qtd_recarga": "0",
+      "qtd_utilizacao": "0" 
     }
   )
 })
 
-app.post('/api/recarga', (req, res) => {
+//Api de Geração
+
+app.get('/api/geracao', async (req, res) => {
+
+  const { code } = await recursive();
+
+  res.json(
+    {
+      "codigo": code,
+    }
+  )
+})
+
+//Api de Recarga
+
+app.post('/api/recarga', async (req, res) => {
   const body = req.body;
   console.log(body);
-  return res.json([body]);
+  console.log(body["codigo-input"]);
+
+  const { connection } = await createConnection();
+
+  const haveCode = await connection.execute(
+    `SELECT *
+     FROM geracao
+     WHERE cod_bilhete = :id`,
+    [body["codigo-input"]],
+  )
+
+  connection.close();
+
+  if (haveCode.rows[0]) {
+
+    let today = new Date().toLocaleDateString();
+
+    const { connection } = await createConnection();
+
+    await connection.execute(
+      `INSERT INTO recarga 
+        VALUES (:1, :2, :3)`,
+      [body["codigo-input"],body["bilhete-type"],today],
+      {autoCommit: true},
+    )
+
+    connection.close();
+    
+    return res.status(200).json("OK")
+  }
+
+  return res.status(204).json("No Code Find")
 })
 
 
