@@ -16,15 +16,10 @@ async function VerifyCode() {
 
   let start = true;
   let code = 0;
-  let numberTeste = 1;
 
   while(start){
-    if (numberTeste == 1) {
-      code = '3WX1-8WF6-3F5O';
-      numberTeste++;
-    } else {
-      code = generateCode();
-    }
+      
+    code = generateCode();
 
     const haveCode = await connection.execute(
         `SELECT *
@@ -44,8 +39,7 @@ async function VerifyCode() {
       [code,today,ConverteTime()],
       {autoCommit: true}
     )
-
-  console.log(code);
+    
   connection.close();
 
   return { code }
