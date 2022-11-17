@@ -8,36 +8,48 @@ const app = express()
 app.use(cors());
 app.use(express.json())
 
-// Função Recursiva para verificar e inserir novo codigo do bilhete
+// Função para verificar e inserir novo codigo do bilhete
 
-const recursive = async () => {
-  let code = generateCode();
+async function VerifyCode() {
 
   const { connection } = await createConnection();
 
-  const haveCode = await connection.execute(
-      `SELECT *
-       FROM geracao
-       WHERE cod_bilhete = :id`,
-      [code],
-    )
+  let start = true;
+  let code = 0;
+  let numberTeste = 1;
 
-  if (haveCode.rows != []) {
-    let today = new Date().toLocaleDateString()
+  while(start){
+    if (numberTeste == 1) {
+      code = '3WX1-8WF6-3F5O';
+      numberTeste++;
+    } else {
+      code = generateCode();
+    }
+
+    const haveCode = await connection.execute(
+        `SELECT *
+        FROM geracao
+        WHERE cod_bilhete = :id`,
+        [code],
+      )
+
+    if (haveCode.rows[0] == undefined ) break;
+
+  }
+
+  let today = new Date().toLocaleDateString()
     await connection.execute(
       `INSERT INTO GERACAO
         VALUES (:0,:1,:2)`,
       [code,today,ConverteTime()],
       {autoCommit: true}
     )
-    connection.close();
 
-    return { code }
-  } else {
-    recursive();
-  }
+  console.log(code);
+  connection.close();
+
+  return { code }
 }
-
 
 // Api de Home
 
@@ -61,7 +73,7 @@ app.get('/api/home', async (req,res) => {
 
 app.get('/api/geracao', async (req, res) => {
 
-  const { code } = await recursive();
+  const { code } = await VerifyCode();
 
   res.json(
     {
