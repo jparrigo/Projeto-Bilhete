@@ -171,20 +171,24 @@ green {
 }
 
 @media only screen and (max-width: 1206px) {
-    .nav-logo a {
+    .header-logo a {
         font-size: 16px;
     }
 
-    .nav-logo img {
+    .header-logo img {
         width: 56px;
     }
 
-    .nav-help {
+    .header-help {
         font-size: 12px;
         margin-right: 10px;
     }
 
     .linha-div {
         display: none;
+    }
+
+    footer h1 {
+        font-size: 12px;
     }
 }
