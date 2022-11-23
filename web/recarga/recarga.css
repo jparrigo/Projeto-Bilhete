@@ -1,0 +1,139 @@
+#red {
+  color: red;
+  font-size: 10px;
+}
+
+section {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  margin: 200px 0;
+  background: url(../img/black-logo-l.png) left no-repeat 
+}
+
+section img {
+  margin: auto;
+  width: 412px;
+}
+
+.info-div {
+  margin: 0 auto;
+}
+
+.info-div h1 {
+  font-size: 36px;
+  margin-bottom: 100px;
+}
+
+.info-div h6 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.info-div #codigo-input {
+  color: #D9D9D9;
+  width: 330px;
+  padding: 10px;
+  border-radius: 3px;
+  background-color: #313131;
+  border: none;
+}
+
+.info-div button {
+  display: block;
+  width: 100%;
+  color: #D9D9D9;
+  font-weight: bold;
+  border-radius: 3px;
+  text-decoration: none;
+  border: none;
+  background-color: #7450D9;
+  padding: 10px 20px;
+  text-align: center;
+  margin-top: 80px;
+  cursor: pointer;
+}
+
+.info-div button:hover {
+    background-color: #7f56f0;
+}
+
+[type="radio"]:checked,
+[type="radio"]:not(:checked) {
+    position: absolute;
+    left: -9999px;
+}
+[type="radio"]:checked + label,
+[type="radio"]:not(:checked) + label
+{
+    position: relative;
+    padding-left: 28px;
+    cursor: pointer;
+    line-height: 20px;
+    display: inline-block;
+    margin-top: 20px;
+    color: #ffffff;
+}
+[type="radio"]:checked + label:before,
+[type="radio"]:not(:checked) + label:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 18px;
+    height: 18px;
+    border: 1px solid #505050;
+    border-radius: 6px;
+    background: #313131;
+}
+[type="radio"]:checked + label:after,
+[type="radio"]:not(:checked) + label:after {
+    content: '';
+    width: 12px;
+    height: 12px;
+    background: #32E143;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    border-radius: 3px;
+    -webkit-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+[type="radio"]:not(:checked) + label:after {
+    opacity: 0;
+    -webkit-transform: scale(0);
+    transform: scale(0);
+}
+[type="radio"]:checked + label:after {
+    opacity: 1;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+}
+
+@media only screen and (max-width: 1206px) {
+
+  section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  section img {
+    width: 40%;
+  }
+
+  .info-div h3 {
+    width: 80%;
+    text-align: center;
+  }
+
+  .info-div p {
+    width: 80%;
+    text-align: center;
+  }
+
+  .info-div li {
+    width: 80%;
+  }
+}

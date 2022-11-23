@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="recarga.css">
+  <link rel="stylesheet" href="../global.css">
+  <link rel="icon" type="image/x-icon" href="img/logo.png">
+  <title>Capibara Express</title>
+</head>
+
+<body>
+  <header>
+    <div class="header-logo">
+      <img src="../img/logo.png" alt="">
+      <a href="../home.html">CAPIBARA</a>
+    </div>
+    <a href="#" class="header-help">Precisa de ajuda!</a>
+  </header>
+  <main>
+    <section>
+      <div class="info-div">
+        <h1>Recarregar Bilhete</h1>
+        <form id='form'>
+          <h6>Digite o código do bilhete: <span id="red"></span></h6>
+          <input id='codigo-input' type="text" name='code' placeholder="XXX-XXX-XXX">
+          <h6>Selecione o tipo da recarga :</h6>
+          <div class="form-radio">
+            <input type="radio" id="unico" name="select_type" onclick=typeClick(1)>
+            <label for="unico" class="tooltip">Bilhete único <span class="tooltiptext">Este bilhete lhe-dará <green>1
+                  vez</green> de
+                uso, para sua utilização basta <green>retornar ao menu</green> e se dirigir até a aba de
+                Utilização</span></label><br>
+            <input type="radio" id="duplo" name="select_type" onclick=typeClick(2)>
+            <label for="duplo" class="tooltip">Bilhete duplo <span class="tooltiptext">Este bilhete lhe-dará <green>2
+                  vezes</green> de
+                uso, para sua utilização basta <green>retornar ao menu</green> e se dirigir até a aba de
+                Utilização</span></label><br>
+            <input type="radio" id="sete" name="select_type" onclick=typeClick(3)>
+            <label for="sete" class="tooltip">Bilhete de 7 dias <span class="tooltiptext">Este bilhete lhe-dará <green>7
+                  dias</green> de
+                uso, para sua utilização basta <green>retornar ao menu</green> e se dirigir até a aba de
+                Utilização</span></label><br>
+            <input type="radio" id="trinta" name="select_type" onclick=typeClick(4)>
+            <label for="trinta" class="tooltip">Bilhete de 30 dias <span class="tooltiptext">Este bilhete lhe-dará
+                <green>30
+                  dias</green> de
+                uso, para sua utilização basta <green>retornar ao menu</green> e se dirigir até a aba de Utilização
+              </span></label><br>
+          </div>
+          <br><br>
+          <span style="margin-right: 10px">Valor a ser pago:</span><span
+            style="background:#313131;padding:5px 10px;border-radius: 3px;" id="value_type">R$0,00</span>
+          <button type="submit">Recarregar Bilhete</button>
+        </form>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <h1>Todos os direitos reservados Capibara Express © 2022</h1>
+  </footer>
+  <script src="recarga.js"></script>
+</body>
+
+</html>

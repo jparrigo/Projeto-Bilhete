@@ -1,0 +1,171 @@
+/* Style Section 01 */
+
+.section01 {
+    height: 563px;
+    background: url(img/black-logo-l.png) left no-repeat #101010;
+}
+
+.section01-div {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding-top: 67px;
+}
+
+.section01-div h1 {
+    font-size: 48px;
+}
+
+.section01-div h4 {
+    color: #A8A8A8;
+    font-size: 14px;
+}
+
+.section01-div-img {
+    display: flex;
+    justify-content: center;
+}
+
+.arrow {
+    transform: translateY(30px);
+}
+
+/* Style Section 02 */
+
+.section02 {
+    height: 593px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 64px 0;
+    background: url(img/black-logo-r.png) right no-repeat;
+}
+
+.section02-div {
+    width: 846px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.section02 h1 {
+    font-size: 48px;
+    padding-bottom: 49px;
+    border-bottom: 2px dashed #7A7A7A;
+    text-align: center;
+}
+
+.section02 ul {
+    color: #9e9e9eee;
+    font-size: 24px;
+    list-style: none;
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    width: 759px;
+    padding: 0;
+}
+
+.section02 ul li {
+    cursor: pointer;
+    padding-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.activate {
+    color: #eeee;
+    border-bottom: 2px solid #32E143;
+}
+
+.type_area {
+    width: 846px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.type_area h2 {
+    font-size: 40px;
+    margin-bottom: 0;
+}
+
+.type_area h4 {
+    font-size: 16px;
+    color: #7A7A7A;
+    margin-top: 26px;
+    margin-bottom: 43px;
+}
+
+.type_area a {
+    color: #fff;
+    background-color: #7450D9;
+    text-decoration: none;
+    padding: 15px 0;
+    border-radius: 3px;
+    font-weight: 500;
+    width: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.type_area a:hover {
+  background-color: #8e68f8;
+}
+
+/* Style Section 03 */
+
+.section03 {
+    height: 563px;
+    background: url(img/black-logo-l.png) left no-repeat #101010;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.section03 h4 {
+    font-size: 32px;
+    color: #868686;
+    margin: 0;
+    margin-bottom: 26px;
+}
+
+.section03 h1 {
+    font-size: 48px;
+    margin: 0;
+    margin-bottom: 80px;
+}
+
+.count_area {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 816px;
+}
+
+.count_area .style {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.count_area span {
+    font-size: 64px;
+    color: #32E143;
+}
+
+.count_area h5 {
+    font-size: 24px;
+    margin: 7px;
+}
+
+.count_area .count_line {
+    width: 163px;
+    height: 4px;
+    background: #fff;
+    border-radius: 6px;
+}
