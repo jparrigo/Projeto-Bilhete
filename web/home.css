@@ -178,12 +178,13 @@
 @media only screen and (max-width: 1206px) {
     .section01 {
         height: 700px;
+        width: 100%;
     }
     .section01-div {
         flex-direction: column;
     }
     .section01-div img {
-        width: 80%;
+        width: 250px;
     }
     .section01-div div {
         width: 70%;
@@ -193,6 +194,13 @@
         font-size: 30px;
     }
 
+    .arrow {
+        transform: translateY(80px);
+    }
+
+    .section02 {
+        width: 100%;
+    }
     .section02-div {
         width: 300px;
     }
@@ -229,6 +237,7 @@
 
     .section03 {
         height: 870px;
+        width: 100%;
     }
     .section03 h4 {
         font-size: 16px;
@@ -240,6 +249,7 @@
     }
     .section03 .count_area {
         flex-direction: column;
+        width: 100%;
     }
     .section03 .count_area img {
         transform: rotate(90deg);

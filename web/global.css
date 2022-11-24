@@ -171,6 +171,7 @@ green {
 }
 
 @media only screen and (max-width: 1206px) {
+
     .header-logo a {
         font-size: 16px;
     }
