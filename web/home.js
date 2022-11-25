@@ -22,7 +22,7 @@ let armazem = [
   `<div>
         <h2>Utilize a qualquer <green>momento</green><br>em qualquer <green>lugar</green></h2>
         <h4>Clique abaixo para mais informações</h4>
-        <a href="#">SAIBA MAIS<img src="img/aviao-de-papel.png"
+        <a href="utilização/utilizacao.html">SAIBA MAIS<img src="img/aviao-de-papel.png"
                 style="width:18px;margin: 0 0 0 10px" /></a>
     </div>
     <img src="img/utilizacao-home.png" alt="" style="width:288px">`,
