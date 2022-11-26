@@ -1,8 +1,7 @@
 const input = document.getElementById('codigo-input');
-let clicktype = "";
 
 async function getRespose(data) {
-  await fetch('http://localhost:3333/api/recarga', {
+  await fetch('http://localhost:3333/api/utilizacao', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -10,12 +9,32 @@ async function getRespose(data) {
     body: JSON.stringify(data)
   })
     .then(res => {
-      if (res.status == 200) {
-        window.location.href = 'recarga-sucesso.html';
-      } else {
+      if (res.status != 200) {
         document.getElementById('red').innerText = "Código não encontrado!";
+        return false;
       }
-    });
+
+      return res.json()
+    })
+    .then(data => {
+      if (data == false) return false;
+
+      document.getElementById('type').innerText = data.type;
+      document.getElementById('data').innerText = data.data;
+      document.getElementById('time').innerText = data.time;
+      document.getElementById('time_res').innerText = data.timeRes;
+
+      if (data.type == 'unico') {
+        document.getElementById('creditos-label').style.display = 'flex';
+      }
+
+      document.getElementById('type').style.filter = 'none';
+      document.getElementById('data').style.filter = 'none';
+      document.getElementById('time').style.filter = 'none';
+      document.getElementById('time_res').style.filter = 'none';
+      document.getElementById('creditos').style.filter = 'none';
+    })
+    .catch(err => console.error(err))
 }
 
 form.addEventListener('submit', (e) => {
@@ -24,10 +43,8 @@ form.addEventListener('submit', (e) => {
   if (input.value == "") return;
 
   let data = {
-    "codigo-input": input.value,
-    "bilhete-type": clicktype
+    "codigo-input": input.value
   }
-
   getRespose(data);
 
 })
