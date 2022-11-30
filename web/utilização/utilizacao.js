@@ -8,23 +8,29 @@ async function getRespose(data) {
     },
     body: JSON.stringify(data)
   })
-    .then(res => {
-      if (res.status != 200) {
-        document.getElementById('red').innerText = "Código não encontrado!";
+    .then(res => res.json())
+    .then(data => {
+      if (data.message) {
+        document.getElementById('red').innerText = data.message;
         return false;
       }
 
-      return res.json()
-    })
-    .then(data => {
-      if (data == false) return false;
+      let timeRes = "";
 
       document.getElementById('type').innerText = data.type;
       document.getElementById('data').innerText = data.data;
       document.getElementById('time').innerText = data.time;
-      document.getElementById('time_res').innerText = data.timeRes;
+      if (data.type == 'unico' || data.type == 'duplo') {
+        timeRes = '40 minutos'
+      } else if (data.type == 'sete') {
+        timeRes = '7 dias'
+      } else {
+        timeRes = '30 dias'
+      }
 
-      if (data.type == 'unico') {
+      document.getElementById('time_res').innerText = timeRes;
+
+      if (data.type == 'duplo') {
         document.getElementById('creditos-label').style.display = 'flex';
       }
 

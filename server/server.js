@@ -120,7 +120,7 @@ app.post('/api/recarga', async (req, res) => {
 //?-----------------------------------------------------------------------------------------------------------------
 app.post('/api/utilizacao', async (req, res) => {
   const body = req.body;
-
+  console.log(body);
   //verificar se o codigo existe
   const { connection } = await createConnection();
 
@@ -128,26 +128,59 @@ app.post('/api/utilizacao', async (req, res) => {
     `SELECT *
     FROM geracao
     WHERE cod_bilhete = :id`,
-    [body['codigo_input']],
+    [body['codigo-input']],
   )
 
-  if (haveCode.rows[0] == undefined ) res.status(404).json();
+  console.log(haveCode);
+
+  if (haveCode.rows[0] == undefined ) {
+    connection.close();
+    return res.status(404).json({"message": 'Codigo não encontrado!'});
+  }
   
   //verificar se tem uma recarga no codigo
   const haveCharge = await connection.execute(
-    `SELECT * FROM recarga WHERE cod_bilhete = :1 AND tipo_recarga = :2`,
-    [body['codigo_input'],body['bilhete-type']],
+    `SELECT * FROM recarga WHERE cod_bilhete = :1 ORDER BY DATA_RECARGA DESC`,
+    [body['codigo-input']],
   )
 
+  console.log(haveCharge);
+
+
   if (haveCharge.rows[0] == undefined ) {
-    res.status(404).json();
+    connection.close();
+    return res.status(404).json({"message": 'Recarga não encontrada!'});
+
   } else {
+
+    const haveUtility = await connection.execute(
+      `SELECT * FROM utilizacao WHERE cod_bilhete = :1 AND tipo_utilizacao = :2`,
+      [body['codigo-input'],haveCharge.rows[0]['TIPO_RECARGA']],
+    )
+
+    if (haveUtility.rows[0] != undefined ) {
+      connection.close();
+      return res.status(404).json({"message": 'Já foi utilizado!'});
+    }
+
+    let today = new Date().toLocaleDateString();
+    let time = ConverteTime()
+
     await connection.execute(
-      `INSERT INTO GERACAO
-        VALUES (:0,:1,:2)`,
-      [code,today,ConverteTime()],
+      `INSERT INTO UTILIZACAO
+        VALUES (:0,:1,:2,:3)`,
+      [body['codigo-input'],haveCharge.rows[0]['TIPO_RECARGA'],today,time],
       {autoCommit: true}
     )
+
+    connection.close();
+
+    return res.status(200).json({
+      "codigo-input": body['codigo-input'],
+      "type": haveCharge.rows[0]['TIPO_RECARGA'],
+      "data": today,
+      "time" : time,
+    })
   }
 
   //ver se a recarga esta valida

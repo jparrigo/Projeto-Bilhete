@@ -55,7 +55,7 @@
     text-align: center;
 }
 
-.section02 ul {
+.section02 nav {
     color: #9e9e9eee;
     font-size: 24px;
     list-style: none;
@@ -66,7 +66,7 @@
     padding: 0;
 }
 
-.section02 ul li {
+.section02 nav li {
     cursor: pointer;
     padding-bottom: 8px;
     display: flex;
@@ -74,7 +74,7 @@
     justify-content: center;
 }
 
-.section02-div ul li img {
+.section02-div nav li img {
     width:23px;
     margin: 0 10px 0 0;
 }
@@ -207,12 +207,12 @@
     .section02-div h1 {
         font-size: 30px;
     }
-    .section02-div ul {
+    .section02-div nav {
         font-size: 12px;
         width: 300px;
         gap: 10px;
     }
-    .section02-div ul li img {
+    .section02-div nav li img {
         width: 15px;
         margin: 0 7px 0 0;
     }
