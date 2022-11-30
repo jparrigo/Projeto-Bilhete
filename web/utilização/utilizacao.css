@@ -60,15 +60,37 @@ section img {
 }
 
 .dados-div {
-  padding: 40px 0;
+  margin: 40px 0;
+  padding: 10px;
   display: flex;
   flex-direction: column;
   gap: 15px;
+  background-color: #313131;
+  border-radius: 3px;
 }
 
 .dados-div label {
   display: flex;
   justify-content: space-between;
+}
+
+.dados-div label span {
+  filter: blur(3px);
+}
+
+.dados-div #creditos-label {
+  display: none;
+}
+
+#help-area {
+  position: absolute;
+  right: 180px;
+  top: 50%;
+  width: 350px;
+}
+
+#help-area p {
+  text-align: justify;
 }
 
 @media only screen and (max-width: 1206px) {

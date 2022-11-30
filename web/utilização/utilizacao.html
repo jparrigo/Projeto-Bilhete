@@ -27,11 +27,35 @@
           <h6>Digite o código do bilhete: <span id="red"></span></h6>
           <input id='codigo-input' type="text" name='code' placeholder="XXX-XXX-XXX">
           <div class="dados-div">
-            <label>Tipo do Bilhete: <span>Nenhum</span></label>
-            <label>Data e Hora da ativação: <span>00/00/0000 00:00</span></label>     
-            <label>Tempo Restante: <span>00:00</span></label>
+            <label>
+              Tipo do Bilhete: 
+              <span id="type">Nenhum</span>
+            </label>
+            <label>
+              Data: 
+              <span id="data">00/00/0000</span>
+            </label>
+            <label>
+              Hora da ativação: 
+              <span id="time">00:00</span>
+            </label>     
+            <label>
+              Tempo Restante: 
+              <span id="time_res">00:00</span>
+            </label>
+            <label id="creditos-label">
+              Créditos Restantes: 
+              <span id="creditos">0</span>
+            </label>
           </div>
           <button type="submit">Utilizar Bilhete</button>
+          <div id="help-area">
+            <h3>Relembrando:</h3>
+            <p>O seu bilhete <green>ÚNICO</green> só pode ser utilizado 1 VEZ no período de <green>40 MINUTOS</green> a partir da aquisição.</p>
+            <p>O seu bilhete <green>DUPLO</green> poderá ser utilizado 2 VEZES no período de <green>40 MINUTOS</green> a partir da aquisição.</p>
+            <p>O seu bilhete <green>SEMANAL (7 DIAS)</green> tem utilização ILIMITADA dentro do período de <green>7 DIAS</green> a partir da aquisição.</p> 
+            <p>O seu bilhete <green>MENSAL (30 DIAS)</green> tem utilização ILIMITADA dentro do período de <green>30 DIAS</green> a partir da aquisição.</p>
+          </div>
         </form>
       </div>
     </section>

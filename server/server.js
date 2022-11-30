@@ -8,8 +8,9 @@ const app = express()
 app.use(cors());
 app.use(express.json())
 
-// Função para verificar e inserir novo codigo do bilhete
-
+//?-----------------------------------------------------------------------------------------------------------------
+//? FUNÇÃO PARA VERIFICAR E INSERIR CODIGO DO BILHETE
+//?-----------------------------------------------------------------------------------------------------------------
 async function VerifyCode() {
 
   const { connection } = await createConnection();
@@ -44,9 +45,9 @@ async function VerifyCode() {
 
   return { code }
 }
-
-// Api de Home
-
+//?-----------------------------------------------------------------------------------------------------------------
+//? API DE DADOS DA HOME PAGE
+//?-----------------------------------------------------------------------------------------------------------------
 app.get('/api/home', async (req,res) => {
 
   const { connection } = await createConnection();
@@ -62,9 +63,9 @@ app.get('/api/home', async (req,res) => {
     }
   )
 })
-
-//Api de Geração
-
+//?-----------------------------------------------------------------------------------------------------------------
+//? API DE GERAÇÃO
+//?-----------------------------------------------------------------------------------------------------------------
 app.get('/api/geracao', async (req, res) => {
 
   const { code } = await VerifyCode();
@@ -75,9 +76,9 @@ app.get('/api/geracao', async (req, res) => {
     }
   )
 })
-
-//Api de Recarga
-
+//?-----------------------------------------------------------------------------------------------------------------
+//? API DE RECARGA
+//?-----------------------------------------------------------------------------------------------------------------
 app.post('/api/recarga', async (req, res) => {
   const body = req.body;
   console.log(body);
@@ -102,8 +103,8 @@ app.post('/api/recarga', async (req, res) => {
 
     await connection.execute(
       `INSERT INTO recarga 
-        VALUES (:1, :2, :3)`,
-      [body["codigo-input"],body["bilhete-type"],today],
+        VALUES (:1, :2, :3, :4, :5)`,
+      [body["codigo-input"],body["bilhete-type"],today,ConverteTime(),body["value-input"]],
       {autoCommit: true},
     )
 
@@ -114,6 +115,45 @@ app.post('/api/recarga', async (req, res) => {
 
   return res.status(204).json("No Code Find")
 })
+//?-----------------------------------------------------------------------------------------------------------------
+//? API DE UTILIZAÇÃO
+//?-----------------------------------------------------------------------------------------------------------------
+app.post('/api/utilizacao', async (req, res) => {
+  const body = req.body;
 
+  //verificar se o codigo existe
+  const { connection } = await createConnection();
 
+  const haveCode = await connection.execute(
+    `SELECT *
+    FROM geracao
+    WHERE cod_bilhete = :id`,
+    [body['codigo_input']],
+  )
+
+  if (haveCode.rows[0] == undefined ) res.status(404).json();
+  
+  //verificar se tem uma recarga no codigo
+  const haveCharge = await connection.execute(
+    `SELECT * FROM recarga WHERE cod_bilhete = :1 AND tipo_recarga = :2`,
+    [body['codigo_input'],body['bilhete-type']],
+  )
+
+  if (haveCharge.rows[0] == undefined ) {
+    res.status(404).json();
+  } else {
+    await connection.execute(
+      `INSERT INTO GERACAO
+        VALUES (:0,:1,:2)`,
+      [code,today,ConverteTime()],
+      {autoCommit: true}
+    )
+  }
+
+  //ver se a recarga esta valida
+  //se nao ativar a recarga
+})
+//?-----------------------------------------------------------------------------------------------------------------
+//? API LISTEN
+//?-----------------------------------------------------------------------------------------------------------------
 app.listen(3333);
