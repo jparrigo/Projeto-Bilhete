@@ -1,5 +1,6 @@
 const input = document.getElementById('codigo-input');
 let clicktype = "";
+let clickvalue = 0;
 
 async function getRespose(data) {
   await fetch('http://localhost:3333/api/recarga', {
@@ -22,22 +23,26 @@ function typeClick(type) {
   switch (type) {
     case 1:
       clicktype = "unico";
-      document.getElementById('value_type').innerText = 'R$10,00';
+      clickvalue = 5.00;
+      document.getElementById('value_type').innerText = 'R$5,00';
       break;
 
     case 2:
       clicktype = "duplo";
-      document.getElementById('value_type').innerText = 'R$18,00';
+      clickvalue = 8.50;
+      document.getElementById('value_type').innerText = 'R$8,50';
       break;
 
     case 3:
       clicktype = "sete";
-      document.getElementById('value_type').innerText = 'R$110,00';
+      clickvalue = 31.99;
+      document.getElementById('value_type').innerText = 'R$31,99';
       break;
 
     case 4:
       clicktype = "trinta";
-      document.getElementById('value_type').innerText = 'R$500,00';
+      clickvalue = 125.99;
+      document.getElementById('value_type').innerText = 'R$125,99';
       break;
   }
 }
@@ -49,7 +54,8 @@ form.addEventListener('submit', (e) => {
 
   let data = {
     "codigo-input": input.value,
-    "bilhete-type": clicktype
+    "bilhete-type": clicktype,
+    "value-input": clickvalue
   }
 
   getRespose(data);
