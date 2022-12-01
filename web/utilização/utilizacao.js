@@ -16,18 +16,26 @@ async function getRespose(data) {
       }
 
       let timeRes = "";
-
-      document.getElementById('type').innerText = data.type;
+      let BilheteType = "";
+      
       document.getElementById('data').innerText = data.data;
       document.getElementById('time').innerText = data.time;
-      if (data.type == 'unico' || data.type == 'duplo') {
+      
+      if (data.type == 'unico') {
+        BilheteType = 'Único'
+        timeRes = '40 minutos'
+      } else if (data.type == 'duplo') {
+        BilheteType = 'Duplo'
         timeRes = '40 minutos'
       } else if (data.type == 'sete') {
+        BilheteType = 'Semanal'
         timeRes = '7 dias'
       } else {
+        BilheteType = 'Mensal'
         timeRes = '30 dias'
       }
 
+      document.getElementById('type').innerText = BilheteType;
       document.getElementById('time_res').innerText = timeRes;
 
       if (data.type == 'duplo') {

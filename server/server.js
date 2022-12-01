@@ -103,8 +103,8 @@ app.post('/api/recarga', async (req, res) => {
 
     await connection.execute(
       `INSERT INTO recarga 
-        VALUES (:1, :2, :3, :4, :5)`,
-      [body["codigo-input"],body["bilhete-type"],today,ConverteTime(),body["value-input"]],
+        VALUES (:1, :2, :3, :4, :5, :6)`,
+      [body["codigo-input"],body["bilhete-type"],today,ConverteTime(),body["value-input"],0],
       {autoCommit: true},
     )
 
@@ -140,8 +140,8 @@ app.post('/api/utilizacao', async (req, res) => {
   
   //verificar se tem uma recarga no codigo
   const haveCharge = await connection.execute(
-    `SELECT * FROM recarga WHERE cod_bilhete = :1 ORDER BY DATA_RECARGA DESC`,
-    [body['codigo-input']],
+    `SELECT * FROM recarga WHERE cod_bilhete = :1 AND status_recarga = :2 ORDER BY DATA_RECARGA DESC`,
+    [body['codigo-input'],0],
   )
 
   console.log(haveCharge);
@@ -172,6 +172,12 @@ app.post('/api/utilizacao', async (req, res) => {
       [body['codigo-input'],haveCharge.rows[0]['TIPO_RECARGA'],today,time],
       {autoCommit: true}
     )
+
+    await connection.execute(
+      `UPDATE recarga SET status_recarga = 1 WHERE cod_bilhete = :1 AND tipo_recarga = :2`,
+      [body['codigo-input'],haveCharge.rows[0]['TIPO_RECARGA']],
+      {autoCommit: true}
+      )
 
     connection.close();
 

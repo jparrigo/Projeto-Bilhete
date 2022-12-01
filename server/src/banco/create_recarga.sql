@@ -3,7 +3,8 @@ CREATE TABLE Recarga (
     tipo_recarga VARCHAR2(30) NOT NULL,
     data_recarga DATE NOT NULL,
     hora_recarga VARCHAR2(30) NOT NULL,
-    valor_recarga NUMBER NOT NULL
+    valor_recarga NUMBER NOT NULL,
+    status_recarga INTEGER NOT NULL
 )
 
 TRUNCATE TABLE RECARGA;
