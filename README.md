@@ -13,7 +13,7 @@ Um site de geração, recarga e utilização de bilhete urbano.
 
 #### Retorna a quantidade de bilhetes (gerados,recarregados e utilizados)
 
-```http
+```bash
   GET /api/home
 ```
 Não é necessario passar parametros!
@@ -21,14 +21,14 @@ Não é necessario passar parametros!
 
 #### Retorna um código único para o seu bilhete
 
-```http
+```bash
   GET /api/geracao
 ```
 Não é necessario passar parametros!
 
 #### Armazenar dados sobre a recarga do bilhete
 
-```http
+```bash
   POST /api/recarga
 ```
 
@@ -39,7 +39,7 @@ Não é necessario passar parametros!
 
 #### Armazenar dados sobre a utilizacao do bilhete
 
-```http
+```bash
   POST /api/utilizacao
 ```
 
@@ -49,7 +49,7 @@ Não é necessario passar parametros!
 
 #### Retornar os dados armazenados sobre o bilhete
 
-```http
+```bash
   POST /api/historico
 ```
 
