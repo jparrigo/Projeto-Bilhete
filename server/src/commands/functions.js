@@ -1,12 +1,12 @@
 
 //Função para Converte o Tempo
 
-export function ConverteTime () {
-    let time = new Date().getMinutes()
-    let hour = new Date().getHours()
-    let result = (hour+':'+time).toString()
+export function ConverteTime (timestamp) {
 
-    return result
+    let FullDate = new Date(timestamp).toLocaleDateString(timestamp)
+    let FullTime = new Date(timestamp).toLocaleTimeString(timestamp)
+
+    return { FullDate,FullTime }
 }
 
 // Função para gerar código único

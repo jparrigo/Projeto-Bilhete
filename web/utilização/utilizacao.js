@@ -18,8 +18,8 @@ async function getRespose(data) {
       let timeRes = "";
       let BilheteType = "";
       
-      document.getElementById('data').innerText = data.data;
-      document.getElementById('time').innerText = data.time;
+      document.getElementById('data').innerText = data.dataRecarga;
+      document.getElementById('time').innerText = data.timeRecarga;
       
       if (data.type == 'unico') {
         BilheteType = 'Único'
