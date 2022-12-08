@@ -1,4 +1,4 @@
-#red {
+#red,#red2 {
   color: red;
   font-size: 10px;
 }
@@ -33,14 +33,40 @@ section img {
 
 .info-div #codigo-input {
   color: #D9D9D9;
-  width: 330px;
+  width: 200px;
   padding: 10px;
   border-radius: 3px;
   background-color: #313131;
   border: none;
 }
 
-.info-div button {
+.info-div #button-pesq {
+  display: inline-block;
+  color: #D9D9D9;
+  font-weight: bold;
+  border-radius: 3px;
+  text-decoration: none;
+  border: none;
+  background-color: #7450D9;
+  padding: 10px 30px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.info-div #button-pesq:hover {
+  background-color: #7f56f0;
+}
+
+.info-div #recargas-type {
+  color: #D9D9D9;
+  width: 350px;
+  padding: 10px;
+  border-radius: 3px;
+  background-color: #313131;
+  border: none;
+}
+
+.info-div #button-submit {
   display: block;
   width: 100%;
   color: #D9D9D9;
@@ -55,7 +81,7 @@ section img {
   cursor: pointer;
 }
 
-.info-div button:hover {
+.info-div #button-submit:hover {
     background-color: #7f56f0;
 }
 

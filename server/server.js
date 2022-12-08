@@ -102,7 +102,7 @@ app.post('/api/recarga', async (req, res) => {
     const { connection } = await createConnection();
 
     await connection.execute(
-      `INSERT INTO recarga 
+      `INSERT INTO recarga (cod_bilhete,tipo_recarga,data_hora_recarga,valor_recarga,status_recarga) 
         VALUES (:1, :2, :3, :4, :5)`,
       [body["codigo-input"],body["bilhete-type"],today,body["value-input"],0],
       {autoCommit: true},
@@ -123,72 +123,176 @@ app.post('/api/utilizacao', async (req, res) => {
   console.log(body);
   //verificar se o codigo existe
   const { connection } = await createConnection();
-
-  const haveCode = await connection.execute(
-    `SELECT *
-    FROM geracao
-    WHERE cod_bilhete = :id`,
-    [body['codigo-input']],
-  )
-
-  console.log(haveCode);
-
-  if (haveCode.rows[0] == undefined ) {
-    connection.close();
-    return res.status(404).json({"message": 'Codigo não encontrado!'});
-  }
   
   //verificar se tem uma recarga no codigo
   const haveCharge = await connection.execute(
-    `SELECT * FROM recarga WHERE cod_bilhete = :1 AND status_recarga = :2 ORDER BY data_hora_recarga DESC`,
-    [body['codigo-input'],0],
+    `SELECT * FROM recarga WHERE cod_bilhete = :1 AND cod_recarga = :2`,
+    [body['codigo-input'],body['codigo-recarga']],
   )
 
-  console.log(haveCharge);
+  //verificar se contem uma utilizacao
+  const haveUtility = await connection.execute(
+    `SELECT * FROM utilizacao WHERE cod_bilhete = :1 AND tipo_utilizacao = :2 AND cod_recarga = :3`,
+    [body['codigo-input'],haveCharge.rows[0]['TIPO_RECARGA'],haveCharge.rows[0]['COD_RECARGA']],
+  )
 
+  let today = new Date().getTime()
+  let TimeRes = "";
+  if (haveUtility.rows.length != 0) {
+    if (haveUtility.rows[0]['TIPO_UTILIZACAO'] == 'unico') {
+      TimeRes = (haveUtility.rows[0]['DATA_HORA_UTILIZACAO'] + (40*60000)) - today
 
-  if (haveCharge.rows[0] == undefined ) {
-    connection.close();
-    return res.status(404).json({"message": 'Recarga não encontrada!'});
+      if (haveUtility.rows[0]['DATA_HORA_UTILIZACAO'] < ((today-(1*60000)))) {
 
-  } else {
-    //verificar se contem uma utilizacao
-    const haveUtility = await connection.execute(
-      `SELECT * FROM utilizacao WHERE cod_bilhete = :1 AND tipo_utilizacao = :2`,
-      [body['codigo-input'],haveCharge.rows[0]['TIPO_RECARGA']],
-    )
+        await connection.execute(
+          `DELETE FROM utilizacao WHERE cod_bilhete = :1 AND cod_recarga = :2`,
+          [body['codigo-input'],body['codigo-recarga']],
+          {autoCommit: true}
+        )
 
-    if (haveUtility.rows[0] != undefined ) {
-      connection.close();
-      return res.status(404).json({"message": 'Já foi utilizado!'});
+        await connection.execute(
+          `DELETE FROM recarga WHERE cod_bilhete = :1 AND cod_recarga = :2`,
+          [body['codigo-input'],body['codigo-recarga']],
+          {autoCommit: true}
+        )
+
+        connection.close();
+        return res.status(404).json({"message2": 'Tempo esgotado!'});
+      }
+    } else if (haveUtility.rows[0]['TIPO_UTILIZACAO'] == 'duplo') {
+      TimeRes = (haveUtility.rows[0]['DATA_HORA_UTILIZACAO'] + (40*60000)) - today
+
+      if (haveUtility.rows[0]['DATA_HORA_UTILIZACAO'] < ((today-(40*60000)))) {
+
+        await connection.execute(
+          `DELETE FROM utilizacao WHERE cod_bilhete = :1 AND cod_recarga = :2`,
+          [body['codigo-input'],body['codigo-recarga']],
+          {autoCommit: true}
+        )
+
+        if(haveCharge.rows[0]['STATUS_RECARGA'] == 2) {
+          await connection.execute(
+            `DELETE FROM recarga WHERE cod_bilhete = :1 AND cod_recarga = :2`,
+            [body['codigo-input'],body['codigo-recarga']],
+            {autoCommit: true}
+          )
+        } else {
+          await connection.execute(
+            `UPDATE recarga SET status_recarga = 2 WHERE cod_bilhete = :1 AND cod_recarga = :2`,
+            [body['codigo-input'],body['codigo-recarga']],
+            {autoCommit: true}
+          )
+        }
+
+        connection.close();
+        return res.status(404).json({"message2": 'Tempo esgotado!'});
+      }
+    } else if (haveUtility.rows[0]['TIPO_UTILIZACAO'] == 'sete') {
+      TimeRes = (haveUtility.rows[0]['DATA_HORA_UTILIZACAO'] + (7*86400)) - today
+
+      if (haveUtility.rows[0]['DATA_HORA_UTILIZACAO'] < ((today-(7*86400)))) {
+
+        await connection.execute(
+          `DELETE FROM utilizacao WHERE cod_bilhete = :1 AND cod_recarga = :2`,
+          [body['codigo-input'],body['codigo-recarga']],
+          {autoCommit: true}
+        )
+
+        await connection.execute(
+          `DELETE FROM recarga WHERE cod_bilhete = :1 AND cod_recarga = :2`,
+          [body['codigo-input'],body['codigo-recarga']],
+          {autoCommit: true}
+        )
+
+        connection.close();
+        return res.status(404).json({"message2": 'Tempo esgotado!'});
+      }
+    } else if (haveUtility.rows[0]['TIPO_UTILIZACAO'] == 'trinta') {
+      TimeRes = (haveUtility.rows[0]['DATA_HORA_UTILIZACAO'] + (30*86400)) - today
+
+      if (haveUtility.rows[0]['DATA_HORA_UTILIZACAO'] < ((today-(30*86400)))) {
+
+        await connection.execute(
+          `DELETE FROM utilizacao WHERE cod_bilhete = :1 AND cod_recarga = :2`,
+          [body['codigo-input'],body['codigo-recarga']],
+          {autoCommit: true}
+        )
+
+        await connection.execute(
+          `DELETE FROM recarga WHERE cod_bilhete = :1 AND cod_recarga = :2`,
+          [body['codigo-input'],body['codigo-recarga']],
+          {autoCommit: true}
+        )
+
+        connection.close();
+        return res.status(404).json({"message2": 'Tempo esgotado!'});
+      }
     }
-    //inserir e atualizar dados sobre a utilizacao e status da recarga
-    let today = new Date().getTime()
-
+  } else {
     await connection.execute(
       `INSERT INTO UTILIZACAO
-        VALUES (:0,:1,:2)`,
-      [body['codigo-input'],haveCharge.rows[0]['TIPO_RECARGA'],today],
+        VALUES (:0,:1,:2,:3)`,
+      [body['codigo-input'],haveCharge.rows[0]['COD_RECARGA'],haveCharge.rows[0]['TIPO_RECARGA'],today],
       {autoCommit: true}
     )
 
     await connection.execute(
-      `UPDATE recarga SET status_recarga = 1 WHERE cod_bilhete = :1 AND tipo_recarga = :2`,
-      [body['codigo-input'],haveCharge.rows[0]['TIPO_RECARGA']],
+      `UPDATE recarga SET status_recarga = 1 WHERE cod_bilhete = :1 AND tipo_recarga = :2 AND cod_recarga = :3`,
+      [body['codigo-input'],haveCharge.rows[0]['TIPO_RECARGA'],haveCharge.rows[0]['COD_RECARGA']],
       {autoCommit: true}
-      )
-
-    connection.close();
-    //retornar a api valores da utilizacao
-    let TimeConv = ConverteTime(today);
-
-    return res.status(200).json({
-      "codigo-input": body['codigo-input'],
-      "type": haveCharge.rows[0]['TIPO_RECARGA'],
-      "dataRecarga": TimeConv.FullDate,
-      "timeRecarga": TimeConv.FullTime
-    })
+    )
   }
+
+  connection.close();
+  //retornar a api valores da utilizacao
+  let TimeConv = ConverteTime(today);
+  if(haveUtility.rows.length != 0) {
+    TimeConv = ConverteTime(haveUtility.rows[0]['DATA_HORA_UTILIZACAO']);
+  }
+  let TimeResResult = new Date(TimeRes).getMinutes();
+  if (haveCharge.rows[0]['TIPO_RECARGA'] == 'sete' || haveCharge.rows[0]['TIPO_RECARGA'] == 'trinta') {
+    TimeResResult = new Date(TimeRes).getDay();
+  }
+
+  return res.status(200).json({
+    "codigo-input": body['codigo-input'],
+    "type": haveCharge.rows[0]['TIPO_RECARGA'],
+    "dataRecarga": TimeConv.FullDate,
+    "timeRecarga": TimeConv.FullTime,
+    "timeRes": TimeResResult
+  })
+})
+
+app.post('/api/utilizacao/pesquisa', async (req, res) => {
+    const body = req.body;
+    const code = body['codigo-input'];
+
+    const { connection } = await createConnection();
+
+    const haveCode = await connection.execute(
+      `SELECT *
+      FROM geracao
+      WHERE cod_bilhete = :id`,
+      [code],
+    )
+  
+    if (haveCode.rows.length == 0 ) {
+      connection.close();
+      return res.status(404).json({"message": 'Codigo não encontrado!'});
+    }
+
+    //verificar se tem uma recarga no codigo
+    const haveCharge = await connection.execute(
+      `SELECT * FROM recarga WHERE cod_bilhete = :1 ORDER BY data_hora_recarga DESC`,
+      [code],
+    )
+
+    if (haveCharge.rows.length == 0 ) {
+      connection.close();
+      return res.status(404).json({"message": 'Recarga não encontrada!'});
+    }
+
+    return res.json(haveCharge.rows);
 })
 //?-----------------------------------------------------------------------------------------------------------------
 //? API DE HISTORICO

@@ -1,5 +1,6 @@
 CREATE TABLE UTILIZACAO (
     cod_bilhete VARCHAR2(30) NOT NULL,
+    cod_recarga VARCHAR2(30) NOT NULL,
     tipo_utilizacao VARCHAR2(30) NOT NULL,
     data_hora_utilizacao NUMBER NOT NULL
 )
