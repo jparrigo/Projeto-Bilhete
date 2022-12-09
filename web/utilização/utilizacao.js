@@ -50,7 +50,7 @@ function getRespose(data) {
       }
 
       document.getElementById('type').innerText = BilheteType;
-      if (data.timeRes == null) {
+      if (data.timeRes == 0) {
         document.getElementById('time_res').innerText = timeResDefault;
       } else {
         document.getElementById('time_res').innerText = data.timeRes+" "+extrainfo;
