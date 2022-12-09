@@ -33,7 +33,7 @@ async function VerifyCode() {
 
   }
 
-  let today = new Date().getTime()
+  let today = Date.now();
     await connection.execute(
       `INSERT INTO GERACAO
         VALUES (:0,:1)`,
@@ -97,7 +97,7 @@ app.post('/api/recarga', async (req, res) => {
 
   if (haveCode.rows[0]) {
 
-    let today = new Date().getTime()
+    let today = Date.now();
 
     const { connection } = await createConnection();
 
@@ -121,7 +121,7 @@ app.post('/api/recarga', async (req, res) => {
 app.post('/api/utilizacao', async (req, res) => {
   const body = req.body;
   console.log(body);
-  //verificar se o codigo existe
+
   const { connection } = await createConnection();
   
   //verificar se tem uma recarga no codigo
@@ -136,13 +136,14 @@ app.post('/api/utilizacao', async (req, res) => {
     [body['codigo-input'],haveCharge.rows[0]['TIPO_RECARGA'],haveCharge.rows[0]['COD_RECARGA']],
   )
 
-  let today = new Date().getTime()
-  let TimeRes = "";
+  let today = Date.now();
+
+  let TimeRes = 0;
   if (haveUtility.rows.length != 0) {
     if (haveUtility.rows[0]['TIPO_UTILIZACAO'] == 'unico') {
-      TimeRes = (haveUtility.rows[0]['DATA_HORA_UTILIZACAO'] + (40*60000)) - today
+      TimeRes = 40 - (Math.floor(today - haveUtility.rows[0]['DATA_HORA_UTILIZACAO']) / 60000);
 
-      if (haveUtility.rows[0]['DATA_HORA_UTILIZACAO'] < ((today-(1*60000)))) {
+      if (TimeRes <= 0) {
 
         await connection.execute(
           `DELETE FROM utilizacao WHERE cod_bilhete = :1 AND cod_recarga = :2`,
@@ -160,9 +161,9 @@ app.post('/api/utilizacao', async (req, res) => {
         return res.status(404).json({"message2": 'Tempo esgotado!'});
       }
     } else if (haveUtility.rows[0]['TIPO_UTILIZACAO'] == 'duplo') {
-      TimeRes = (haveUtility.rows[0]['DATA_HORA_UTILIZACAO'] + (40*60000)) - today
+      TimeRes = 40 - (Math.floor(today - haveUtility.rows[0]['DATA_HORA_UTILIZACAO']) / 60000);
 
-      if (haveUtility.rows[0]['DATA_HORA_UTILIZACAO'] < ((today-(40*60000)))) {
+      if (TimeRes <= 0) {
 
         await connection.execute(
           `DELETE FROM utilizacao WHERE cod_bilhete = :1 AND cod_recarga = :2`,
@@ -188,9 +189,9 @@ app.post('/api/utilizacao', async (req, res) => {
         return res.status(404).json({"message2": 'Tempo esgotado!'});
       }
     } else if (haveUtility.rows[0]['TIPO_UTILIZACAO'] == 'sete') {
-      TimeRes = (haveUtility.rows[0]['DATA_HORA_UTILIZACAO'] + (7*86400)) - today
+      TimeRes = (7 * 1440) - (Math.floor(today - haveUtility.rows[0]['DATA_HORA_UTILIZACAO']) / 60000);
 
-      if (haveUtility.rows[0]['DATA_HORA_UTILIZACAO'] < ((today-(7*86400)))) {
+      if (TimeRes < 0) {
 
         await connection.execute(
           `DELETE FROM utilizacao WHERE cod_bilhete = :1 AND cod_recarga = :2`,
@@ -208,9 +209,9 @@ app.post('/api/utilizacao', async (req, res) => {
         return res.status(404).json({"message2": 'Tempo esgotado!'});
       }
     } else if (haveUtility.rows[0]['TIPO_UTILIZACAO'] == 'trinta') {
-      TimeRes = (haveUtility.rows[0]['DATA_HORA_UTILIZACAO'] + (30*86400)) - today
+      TimeRes = (30 * 1440) - (Math.floor(today - haveUtility.rows[0]['DATA_HORA_UTILIZACAO']) / 60000);
 
-      if (haveUtility.rows[0]['DATA_HORA_UTILIZACAO'] < ((today-(30*86400)))) {
+      if (TimeRes < 0) {
 
         await connection.execute(
           `DELETE FROM utilizacao WHERE cod_bilhete = :1 AND cod_recarga = :2`,
@@ -249,9 +250,9 @@ app.post('/api/utilizacao', async (req, res) => {
   if(haveUtility.rows.length != 0) {
     TimeConv = ConverteTime(haveUtility.rows[0]['DATA_HORA_UTILIZACAO']);
   }
-  let TimeResResult = new Date(TimeRes).getMinutes();
-  if (haveCharge.rows[0]['TIPO_RECARGA'] == 'sete' || haveCharge.rows[0]['TIPO_RECARGA'] == 'trinta') {
-    TimeResResult = new Date(TimeRes).getDay();
+
+  if (haveUtility.rows[0]['TIPO_UTILIZACAO'] == 'sete' || haveUtility.rows[0]['TIPO_UTILIZACAO'] == 'trinta') {
+    TimeRes = Math.floor(TimeRes / 1440);
   }
 
   return res.status(200).json({
@@ -259,7 +260,7 @@ app.post('/api/utilizacao', async (req, res) => {
     "type": haveCharge.rows[0]['TIPO_RECARGA'],
     "dataRecarga": TimeConv.FullDate,
     "timeRecarga": TimeConv.FullTime,
-    "timeRes": TimeResResult
+    "timeRes": TimeRes
   })
 })
 
@@ -341,7 +342,7 @@ app.post('/api/historico', async (req, res) => {
 
     if (haveUtility.rows.length != 0 ) {
       for(let i = 0; i < haveUtility.rows.length; i++) {
-        let TimeConv = ConverteTime(haveUtility.rows[i]['DATA_HORA_UTILIZACAO']);
+        let TimeConv = ConverteTime(haveUtility.rows[i]['DATA_HORA_UTILIZACAO'] * 1000);
         UtilizacaoData.push([
           TimeConv.FullDate+"  "+TimeConv.FullTime,
           haveUtility.rows[i]['TIPO_UTILIZACAO'],

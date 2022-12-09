@@ -1,6 +1,6 @@
 CREATE TABLE Geracao (
     cod_bilhete VARCHAR2(30) NOT NULL,
-    data_hora_geracao NUMBER NOT NULL
+    data_hora_geracao INTEGER NOT NULL
 )
 
 DROP TABLE GERACAO;
@@ -8,3 +8,5 @@ DROP TABLE GERACAO;
 SELECT * FROM GERACAO;
 
 DESC GERACAO;
+
+TRUNCATE TABLE GERACAO;
