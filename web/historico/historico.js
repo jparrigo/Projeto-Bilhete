@@ -87,14 +87,15 @@ function getHistory(data) {
 }
 
 function getUtility(data) {
-  let TextTitle = ['Data e hora:','Tipo:']
+  let TextTitle = ['Data e hora:','Tipo:','Valor: ']
   let HtmlUtilizacao = `<h4>UTILIZAÇÃO</h4>`;
   for (let i = 0; i < data.utilizacao.length; i++) {
     for (let k = 0; k < data.utilizacao[i].length; k++) {
 
       let style = '';
-      if (k == 1) {
-        style = 'border-bottom: 2px solid #beb7d016;padding-bottom: 12px;'
+      if (k == 2) {
+        style = 'border-bottom: 2px solid #beb7d016;padding-bottom: 12px;';
+        data.utilizacao[i][k] = "R$"+data.utilizacao[i][k];
       }
       
       if (data.utilizacao[i][1] == 'unico') {

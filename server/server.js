@@ -53,13 +53,15 @@ app.get('/api/home', async (req,res) => {
   const { connection } = await createConnection();
 
   let qtdGeracao = await connection.execute(`SELECT COUNT(cod_bilhete) "Count" FROM GERACAO`);
+  let qtdRecarga = await connection.execute(`SELECT COUNT(cod_bilhete) "Count" FROM RECARGA`);
+  let qtdUtilizacao = await connection.execute(`SELECT COUNT(cod_bilhete) "Count" FROM UTILIZACAO`);
 
   connection.close();
   res.json(
     {
       "qtd_geracao": qtdGeracao.rows[0].Count,
-      "qtd_recarga": "0",
-      "qtd_utilizacao": "0" 
+      "qtd_recarga": qtdRecarga.rows[0].Count,
+      "qtd_utilizacao": qtdUtilizacao.rows[0].Count 
     }
   )
 })
@@ -81,8 +83,6 @@ app.get('/api/geracao', async (req, res) => {
 //?-----------------------------------------------------------------------------------------------------------------
 app.post('/api/recarga', async (req, res) => {
   const body = req.body;
-  console.log(body);
-  console.log(body["codigo-input"]);
 
   const { connection } = await createConnection();
 
@@ -108,6 +108,13 @@ app.post('/api/recarga', async (req, res) => {
       {autoCommit: true},
     )
 
+    await connection.execute(
+      `INSERT INTO historico_recarga
+        VALUES (:0,:1,:2,:3)`,
+        [body["codigo-input"],today,body["value-input"],body["bilhete-type"]],
+        {autoCommit: true}
+    )
+
     connection.close();
     
     return res.status(200).json("OK")
@@ -120,7 +127,6 @@ app.post('/api/recarga', async (req, res) => {
 //?-----------------------------------------------------------------------------------------------------------------
 app.post('/api/utilizacao', async (req, res) => {
   const body = req.body;
-  console.log(body);
 
   const { connection } = await createConnection();
   
@@ -242,16 +248,24 @@ app.post('/api/utilizacao', async (req, res) => {
       [body['codigo-input'],haveCharge.rows[0]['TIPO_RECARGA'],haveCharge.rows[0]['COD_RECARGA']],
       {autoCommit: true}
     )
+
+    await connection.execute(
+      `INSERT INTO historico_utilizacao
+        VALUES (:0,:1,:2,:3)`,
+        [body["codigo-input"],today,haveCharge.rows[0]['VALOR_RECARGA'],haveCharge.rows[0]['TIPO_RECARGA']],
+        {autoCommit: true}
+    )
   }
 
   connection.close();
   //retornar a api valores da utilizacao
+  
   let TimeConv = ConverteTime(today);
   if(haveUtility.rows.length != 0) {
     TimeConv = ConverteTime(haveUtility.rows[0]['DATA_HORA_UTILIZACAO']);
   }
 
-  if (haveUtility.rows[0]['TIPO_UTILIZACAO'] == 'sete' || haveUtility.rows[0]['TIPO_UTILIZACAO'] == 'trinta') {
+  if (haveCharge.rows[0]['TIPO_RECARGA'] == 'sete' || haveCharge.rows[0]['TIPO_RECARGA'] == 'trinta') {
     TimeRes = Math.floor(TimeRes / 1440);
   }
 
@@ -304,9 +318,7 @@ app.post('/api/historico', async (req, res) => {
   const { connection } = await createConnection();
 
   const haveCode = await connection.execute(
-    `SELECT *
-    FROM geracao
-    WHERE cod_bilhete = :id`,
+    `SELECT * FROM geracao WHERE cod_bilhete = :1`,
     [body['codigo-input']],
   )
 
@@ -315,14 +327,13 @@ app.post('/api/historico', async (req, res) => {
     return res.status(404).json({"message": 'Codigo não encontrado!'});
   }
 
-  //verificar se tem uma recarga no codigo
-  const haveCharge = await connection.execute(
-    `SELECT * FROM recarga WHERE cod_bilhete = :1 ORDER BY data_hora_recarga DESC`,
+  const historyCharge = await connection.execute(
+    `SELECT * FROM historico_recarga WHERE cod_bilhete = :1`,
     [body['codigo-input']],
   )
 
-  const haveUtility = await connection.execute(
-    `SELECT * FROM utilizacao WHERE cod_bilhete = :1`,
+  const historyUtility = await connection.execute(
+    `SELECT * FROM historico_utilizacao WHERE cod_bilhete = :1`,
     [body['codigo-input']],
   )
 
@@ -330,29 +341,29 @@ app.post('/api/historico', async (req, res) => {
 
   let RecargaData = []
   let UtilizacaoData = []
-  if (haveCharge.rows.length != 0 ) {
-    for(let i = 0; i < haveCharge.rows.length; i++) {
-      let TimeConv = ConverteTime(haveCharge.rows[i]['DATA_HORA_RECARGA']);
+  if (historyCharge.rows.length != 0 ) {
+    for(let i = 0; i < historyCharge.rows.length; i++) {
+      let TimeConv = ConverteTime(historyCharge.rows[i]['DATA_HORA_RECARGA']);
       RecargaData.push([
         TimeConv.FullDate+"  "+TimeConv.FullTime,
-        haveCharge.rows[i]['TIPO_RECARGA'],
-        haveCharge.rows[i]['VALOR_RECARGA'].toFixed(2),
+        historyCharge.rows[i]['TIPO_BILHETE'],
+        historyCharge.rows[i]['VALOR_BILHETE'].toFixed(2),
       ])
     }
 
-    if (haveUtility.rows.length != 0 ) {
-      for(let i = 0; i < haveUtility.rows.length; i++) {
-        let TimeConv = ConverteTime(haveUtility.rows[i]['DATA_HORA_UTILIZACAO'] * 1000);
+    if (historyUtility.rows.length != 0 ) {
+      for(let i = 0; i < historyUtility.rows.length; i++) {
+        let TimeConv = ConverteTime(historyUtility.rows[i]['DATA_HORA_UTILIZACAO'] * 1000);
         UtilizacaoData.push([
           TimeConv.FullDate+"  "+TimeConv.FullTime,
-          haveUtility.rows[i]['TIPO_UTILIZACAO'],
+          historyUtility.rows[i]['TIPO_BILHETE'],
+          historyUtility.rows[i]['VALOR_BILHETE'].toFixed(2),
         ])
       }
     }
   }
 
   let TimeConv = ConverteTime(haveCode.rows[0]['DATA_HORA_GERACAO']);
-  console.log(UtilizacaoData);
   return res.json({
     "codigo": body['codigo-input'],
     "geracao": {
