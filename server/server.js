@@ -274,7 +274,7 @@ app.post('/api/utilizacao', async (req, res) => {
     "type": haveCharge.rows[0]['TIPO_RECARGA'],
     "dataRecarga": TimeConv.FullDate,
     "timeRecarga": TimeConv.FullTime,
-    "timeRes": TimeRes
+    "timeRes": parseInt(TimeRes)
   })
 })
 
