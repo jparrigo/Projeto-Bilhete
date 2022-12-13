@@ -353,7 +353,7 @@ app.post('/api/historico', async (req, res) => {
 
     if (historyUtility.rows.length != 0 ) {
       for(let i = 0; i < historyUtility.rows.length; i++) {
-        let TimeConv = ConverteTime(historyUtility.rows[i]['DATA_HORA_UTILIZACAO'] * 1000);
+        let TimeConv = ConverteTime(historyUtility.rows[i]['DATA_HORA_UTILIZACAO']);
         UtilizacaoData.push([
           TimeConv.FullDate+"  "+TimeConv.FullTime,
           historyUtility.rows[i]['TIPO_BILHETE'],
